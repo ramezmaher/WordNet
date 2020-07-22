@@ -10,7 +10,7 @@ import edu.princeton.cs.algs4.In;
 public class WordNet {
 	private Map<Integer,String> MySynset;
 	private Digraph wordGraph;
-	private int root;
+	private SAP sap;
 	public WordNet(String synsets, String hypernyms) {
 		if(synsets == null || hypernyms == null)
 			throw new IllegalArgumentException();
@@ -20,6 +20,7 @@ public class WordNet {
 		HypernymsParser(hypernyms);
 		if(!isDAG())
 			throw new IllegalArgumentException();
+		sap = new SAP(wordGraph);
 	}
 	private void SynsetParser (String synset) {
 		In input  = new In(synset);
@@ -80,7 +81,21 @@ public class WordNet {
 			throw new IllegalArgumentException();
 		if(!isNoun(nounA) || !isNoun(nounB))
 			throw new IllegalArgumentException();
-		return null;
+		int a=0,b=0;
+		boolean fa=false,fb=false;
+		for(Integer i : MySynset.keySet()) {
+			if(MySynset.get(i).equals(nounA)) {
+				a = i;
+				fa = true;
+			}
+			else if(MySynset.get(i).equals(nounB)) {
+				b = i;
+				fb = true;
+			}
+			if(fb && fa )
+				break;
+		}
+		return MySynset.get(sap.ancestor(a, b));
 	}
 	
 	private boolean isDAG() {
@@ -89,40 +104,11 @@ public class WordNet {
 		for(Integer i : s) {
 			if(wordGraph.outdegree(i) == 0)
 				{
-				root = i ;
 				count++;
 				}
 		}
 		if(count == 0 || count > 1)
 			return false;
 		return true;
-	}
-	private static void print(Map<Integer,Integer> m,int v) {
-		System.out.println(v);
-	    for (Integer i: m.keySet())
-	    	System.out.println(i + "-->" + m.get(i));
-	    System.out.println("----");
-	}
-		public static void main(String[] args) {
-		Digraph g = new Digraph(13);
-		g.addEdge(0, 1);
-		g.addEdge(0, 5);
-		g.addEdge(5, 4);
-		g.addEdge(4, 3);
-		g.addEdge(4, 2);
-		g.addEdge(3, 2);
-		g.addEdge(2, 0);
-		g.addEdge(6, 0);
-		g.addEdge(6, 4);
-		g.addEdge(6, 9);
-		g.addEdge(6, 8);
-		g.addEdge(8, 6);
-		g.addEdge(7, 6);
-		g.addEdge(7, 9);
-		g.addEdge(9, 10);
-		g.addEdge(9, 11);
-		g.addEdge(10, 12);
-		g.addEdge(12, 9);
-		g.addEdge(11, 12);
 	}
 }
