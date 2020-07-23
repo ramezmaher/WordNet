@@ -31,4 +31,7 @@ public class Outcast {
 			}
 		return nouns[index];
 	}
+	public static void main(String[] args) {
+		//only for testing
+	}
 }
